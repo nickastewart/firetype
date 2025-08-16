@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
+	"regexp"
 	"log"
 )
 
@@ -57,7 +58,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursorPos--
 			}
 		default:
-			if m.cursorPos < len(m.quote)-1 {
+			if isValidCharacter(msg.String()) && m.cursorPos < len(m.quote)-1 {
 				m.input += msg.String()
 				m.cursorPos++
 			}
@@ -69,6 +70,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, cmd
+}
+
+func isValidCharacter(s string) bool {
+	if len(s) > 1 {
+		return false
+	}
+	matched, err := regexp.MatchString("[a-zA-Z0-9,.;:'\"?! ]", s)
+	if err != nil {
+		return false
+	}
+	return matched
 }
 
 func (m model) View() string {
