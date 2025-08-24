@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
-	"regexp"
+	"github.com/charmbracelet/lipgloss"
 	"log"
+	"regexp"
 )
 
 func main() {
@@ -89,13 +90,26 @@ func (m model) View() string {
 
 	var quoteRunes []rune = []rune(m.quote)
 	var displayQuote string = ""
+
+
 	for i := 0; i < len(m.quote); i++ {
 		if i == m.cursorPos {
 			displayQuote += m.cursor.View()
 		} else {
-			displayQuote += string(quoteRunes[i])
+			style := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
+			displayQuote += style.SetString(string(quoteRunes[i])).Render()
 		}
 	}
+	
+	return fmt.Sprintf("\n\n		"+displayQuote+" \n\n		%s", m.input)
+}
 
-	return fmt.Sprintf("\n\n		%s \n\n		%s", displayQuote, m.input)
+type Char struct {
+	Char  rune
+	Style lipgloss.Style
+}
+
+func (char *Char) render() string {
+	char.Style.SetString(string(char.Char))
+	return char.Style.Render()
 }
